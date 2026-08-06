@@ -21,7 +21,7 @@
         <div class="space-y-4">
             <div>
                 <input type="text" id="productInput" 
-                    placeholder="Product ka exact naam likhein (e.g. Samsung Galaxy Tab 2, Boat Airdopes 141)" 
+                    placeholder="Product ka exact naam likhein (e.g. Samsung Galaxy M34 5G, Boat Airdopes 141)" 
                     class="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400 text-white placeholder-slate-400">
             </div>
             <button onclick="generateReview()" id="submitBtn"
@@ -48,6 +48,7 @@
     </div>
 
     <script>
+        // API Key Environment Variables se automatic uthayega
         async function generateReview() {
             const productName = document.getElementById('productInput').value.trim();
             if (!productName) {
@@ -65,16 +66,32 @@
             outputCard.classList.add('hidden');
             submitBtn.disabled = true;
 
+            const promptText = `Aap YouTube ke sabse top tech aur product reviewer hain. 
+Product: "${productName}" ka ek bilkul detailed, technical aur YouTube Script style me full review Hindi me likhein. 
+
+Jisme ye sabhi sections detail me cover hon:
+1. 🌟 Overall Score & Verdict Summary
+2. 📦 Unboxing & Build Quality
+3. 🔬 Full Technical Specifications
+4. ⚡ Performance & Real-World Test
+5. 📸 Camera / Display / Sound Quality
+6. ✅ Kyun Kharidna Chahiye (Detailed Pros)
+7. ❌ Kyun Nahi Kharidna Chahiye (Detailed Cons)
+8. 🎯 Kiske Liye Sahi Hai (Who Should Buy?)
+
+Style energetic, professional aur clear Hinglish/Hindi rakhein.`;
+
             try {
-                const response = await fetch('/api/generate', {
+                // Direct call using latest working gemini-2.5-flash model
+                const res = await fetch('/api/generate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ productName })
                 });
 
-                const data = await response.json();
+                const data = await res.json();
                 
-                if (response.ok && data.candidates && data.candidates[0].content.parts[0].text) {
+                if (res.ok && data.candidates && data.candidates[0].content.parts[0].text) {
                     const aiReview = data.candidates[0].content.parts[0].text;
                     reviewContent.innerHTML = marked.parse(aiReview);
                     buyButton.href = `https://www.amazon.in/s?k=${encodeURIComponent(productName)}`;
@@ -83,7 +100,7 @@
                     alert('Error: ' + (data.error || 'Response generate nahi ho paya.'));
                 }
             } catch (error) {
-                alert('Server Error! Kripya Vercel settings me API key check karein.');
+                alert('Server Connection Error!');
             } finally {
                 loading.classList.add('hidden');
                 submitBtn.disabled = false;
