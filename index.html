@@ -21,7 +21,7 @@
         <div class="space-y-4">
             <div>
                 <input type="text" id="productInput" 
-                    placeholder="Product ka exact naam likhein (e.g. Samsung Galaxy M34 5G, Boat Airdopes 141)" 
+                    placeholder="Product ka exact naam likhein (e.g. Samsung Galaxy Tab 2, Boat Airdopes 141)" 
                     class="w-full px-4 py-3 rounded-xl bg-slate-700 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-400 text-white placeholder-slate-400">
             </div>
             <button onclick="generateReview()" id="submitBtn"
@@ -74,13 +74,13 @@
 
                 const data = await response.json();
                 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                if (response.ok && data.candidates && data.candidates[0].content.parts[0].text) {
                     const aiReview = data.candidates[0].content.parts[0].text;
                     reviewContent.innerHTML = marked.parse(aiReview);
                     buyButton.href = `https://www.amazon.in/s?k=${encodeURIComponent(productName)}`;
                     outputCard.classList.remove('hidden');
                 } else {
-                    alert('Response generate nahi ho paya.');
+                    alert('Error: ' + (data.error || 'Response generate nahi ho paya.'));
                 }
             } catch (error) {
                 alert('Server Error! Kripya Vercel settings me API key check karein.');
